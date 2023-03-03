@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BoundsCheck))]
 public class Enemy : MonoBehaviour
 {
     [Header("Inscribed")]
@@ -9,6 +10,11 @@ public class Enemy : MonoBehaviour
     public float fireRate = 0.3f;
     public float health = 10;
     public int score = 100;
+    private BoundsCheck bndCheck;
+
+    void Awake(){
+        bndCheck = GetComponent<BoundsCheck>();
+    }
     public Vector3 pos {
         get {
             return this.transform.position;
@@ -17,11 +23,16 @@ public class Enemy : MonoBehaviour
             this.transform.position = value;
         }
     }
-    
+
     // Update is called once per frame
     void Update()
     {
         Move();
+        if (!bndCheck.isOnScreen) {
+            if (pos.y < bndCheck.camHeight - bndCheck.radius){
+                Destroy(gameObject);
+            }
+        }
 
     }
     public virtual void Move() {
