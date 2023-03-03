@@ -11,6 +11,7 @@ public class Enemy_2 : Enemy
     public AnimationCurve rotCurve;
     [Header("Enemy_2 Private Fields")]
     [SerializeField] private float birthTime;
+    private Quaternion baseRotation;
     [SerializeField] private Vector3 p0, p1;
     // Start is called before the first frame update
     void Start()
@@ -26,6 +27,9 @@ public class Enemy_2 : Enemy
             p1.x *= -1;
         }
         birthTime = Time.time;
+        transform.position = p0;
+        transform.LookAt(p1, Vector3.back);
+        baseRotation = transform.rotation;
     }
     public override void Move() {
         float u = (Time.time - birthTime) / lifeTime;
@@ -34,8 +38,9 @@ public class Enemy_2 : Enemy
             return;
         }
         float shipRot = rotCurve.Evaluate(u) * 360;
-        if(p0.x > p1.x) shipRot = -shipRot;
-        transform.rotation = Quaternion.Euler(0,shipRot,0);
+        //if(p0.x > p1.x) shipRot = -shipRot;
+        //transform.rotation = Quaternion.Euler(0,shipRot,0);
+        transform.rotation = baseRotation * Quaternion.Euler(-shipRot, 0, 0);
         u = u + sinEccentricity * (Mathf.Sin(u*Mathf.PI*2));
         pos = (1-u)*p0 + u*p1;
     }
